@@ -131,6 +131,8 @@ class Client:
         return self._add_comment("project", project_id, text, hours)
 
     def _add_comment(self, _type, _id, text, hours):
+        if _id < 1000000:
+            _id += 1000000
         return self.request("BumsCommonApiV01/Comment/create.api", {
             "SubjectType": _type,
             "SubjectId": _id,
