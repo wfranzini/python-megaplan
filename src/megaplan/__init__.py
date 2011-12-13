@@ -37,6 +37,7 @@ import time
 import urllib
 import urllib2
 
+
 class Request:
     def __init__(self, hostname, access_id, secret_key, uri, data=None):
         self.method = 'POST'
@@ -112,7 +113,13 @@ class Client:
         return self.request('BumsTaskApiV01/Task/list.api', { 'Status': status })['tasks']
 
     def get_task_details(self, task_id):
-        return self.request('BumsTaskApiV01/Task/card.api', { 'Id': task_id })
+        """Returns task description or None if there's no such task."""
+        try:
+            return self.request('BumsTaskApiV01/Task/card.api', { 'Id': task_id })
+        except urllib2.HTTPError, e:
+            if e.getcode() == 404:
+                return None
+            raise e
 
     def get_task_comments(self, task_id):
         return self.request('BumsCommonApiV01/Comment/list.api', { 'SubjectType': 'task', 'SubjectId': task_id })
