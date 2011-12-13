@@ -94,7 +94,7 @@ class Client:
         Args should be a dictionary or None; uri must not begin with a slash
         (e.g., "BumsTaskApiV01/Task/list.api").  If an error happens, an
         exception occurs."""
-        if self.access_id is None or self.secret_key is None:
+        if uri != "BumsCommonApiV01/User/authorize.api" and (self.access_id is None or self.secret_key is None):
             raise Exception('Authenticate first.')
         req = Request(self.hostname, self.access_id, self.secret_key, uri, args)
         if signed:
