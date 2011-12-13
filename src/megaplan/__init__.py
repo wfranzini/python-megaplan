@@ -117,4 +117,18 @@ class Client:
     def get_task_comments(self, task_id):
         return self.request('BumsCommonApiV01/Comment/list.api', { 'SubjectType': 'task', 'SubjectId': task_id })
 
+    def add_task_comment(self, task_id, text, hours=0):
+        return self._add_comment("task", task_id, text, hours)
+
+    def add_project_comment(self, project_id, text, hours=0):
+        return self._add_comment("project", project_id, text, hours)
+
+    def _add_comment(self, _type, _id, text, hours):
+        return self.request("BumsCommonApiV01/Comment/create.api", {
+            "SubjectType": _type,
+            "SubjectId": _id,
+            "Model[Text]": text,
+            "[Model]Work": hours,
+        })
+
 __all__ = [ 'Client' ]
