@@ -33,6 +33,7 @@ import base64
 import hashlib
 import hmac
 import simplejson
+import sys
 import time
 import urllib
 import urllib2
@@ -64,6 +65,8 @@ class Request:
         req.add_header('User-Agent', 'SdfApi_Request')
         if self.signature:
             req.add_header('X-Authorization', self.access_id + ':' + self.signature)
+
+        # print >> sys.stderr, url, data
 
         res = urllib2.urlopen(req)
         data = simplejson.loads(res.read())
@@ -115,7 +118,7 @@ class Client:
     def get_task_details(self, task_id):
         """Returns task description or None if there's no such task."""
         try:
-            return self.request('BumsTaskApiV01/Task/card.api', { 'Id': task_id })
+            return self.request('BumsTaskApiV01/Task/card.api', { 'Id': self._task_id(task_id) })
         except urllib2.HTTPError, e:
             if e.getcode() == 404:
                 return None
@@ -137,7 +140,12 @@ class Client:
             "SubjectType": _type,
             "SubjectId": _id,
             "Model[Text]": text,
-            "[Model]Work": hours,
+            "Model[Work]": hours,
         })
+
+    def _task_id(self, task_id):
+        if task_id < 1000000:
+            task_id += 1000000
+        return task_id
 
 __all__ = [ 'Client' ]
