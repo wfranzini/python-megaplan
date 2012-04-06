@@ -106,6 +106,11 @@ class Client:
             req.sign()
         return req.send()
 
+    def _task_id(self, task_id):
+        if task_id < 1000000:
+            task_id += 1000000
+        return task_id
+
     # SOME HELPER METHODS
 
     def get_actual_tasks(self):
@@ -146,11 +151,9 @@ class Client:
         return self._add_comment("project", project_id, text, hours)
 
     def _add_comment(self, _type, _id, text, hours):
-        if _id < 1000000:
-            _id += 1000000
         return self.request("BumsCommonApiV01/Comment/create.api", {
             "SubjectType": _type,
-            "SubjectId": _id,
+            "SubjectId": self._task_id(_id),
             "Model[Text]": text,
             "Model[Work]": hours,
         })
