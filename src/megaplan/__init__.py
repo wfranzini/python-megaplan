@@ -73,7 +73,8 @@ class Request:
         if data['status']['code'] != 'ok':
             raise Exception(data['status']['message'])
 
-        return data['data']
+        if "data" in data:
+            return data['data']
 
 
 class Client:
@@ -122,6 +123,17 @@ class Client:
         except urllib2.HTTPError, e:
             if e.getcode() == 404:
                 return None
+            raise e
+
+    def act(self, task_id, action):
+        try:
+            return self.request("BumsTaskApiV01/Task/action.api", {
+                "Id": self._task_id(task_id),
+                "Action": action,
+            })
+        except urllib2.HTTPError, e:
+            if e.getcode() == 403:
+                return False
             raise e
 
     def get_task_comments(self, task_id):
