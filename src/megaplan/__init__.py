@@ -113,6 +113,13 @@ class Client:
 
     # SOME HELPER METHODS
 
+    def get_incoming_tasks(self):
+        """Returns all visible tasks"""
+        return self.request('BumsTaskApiV01/Task/list.api', {
+            'Folder': 'incoming',
+            'Detailed': True,
+        })["tasks"]
+
     def get_actual_tasks(self):
         """Returns your active tasks as a list of dictionaries."""
         return self.request('BumsTaskApiV01/Task/list.api', { 'Status': 'actual' })['tasks']
@@ -131,7 +138,7 @@ class Client:
             raise e
 
     def get_task_comments(self, task_id):
-        return self.request('BumsCommonApiV01/Comment/list.api', { 'SubjectType': 'task', 'SubjectId': task_id })
+        return self.request('BumsCommonApiV01/Comment/list.api', { 'SubjectType': 'task', 'SubjectId': task_id })["comments"]
 
     def add_task_comment(self, task_id, text, hours=0):
         return self._add_comment("task", task_id, text, hours)
