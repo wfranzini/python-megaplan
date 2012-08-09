@@ -32,10 +32,14 @@ License: BSD.
 import base64
 import hashlib
 import hmac
-import simplejson
 import time
 import urllib
 import urllib2
+
+try:
+    import json as simplejson
+except ImportError:
+    import simplejson
 
 
 class Request:
