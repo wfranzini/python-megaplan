@@ -74,7 +74,8 @@ class Request:
         if data['status']['code'] != 'ok':
             raise Exception(data['status']['message'])
 
-        return data['data']
+        if "data" in data:
+            return data['data']
 
 
 class Client:
@@ -137,6 +138,17 @@ class Client:
                 return None
             raise e
 
+    def act(self, task_id, action):
+        try:
+            return self.request("BumsTaskApiV01/Task/action.api", {
+                "Id": self._task_id(task_id),
+                "Action": action,
+            })
+        except urllib2.HTTPError, e:
+            if e.getcode() == 403:
+                return False
+            raise e
+
     def get_task_comments(self, task_id):
         return self.request('BumsCommonApiV01/Comment/list.api', { 'SubjectType': 'task', 'SubjectId': task_id })["comments"]
 
@@ -151,7 +163,12 @@ class Client:
             "SubjectType": _type,
             "SubjectId": self._task_id(_id),
             "Model[Text]": text,
-            "[Model]Work": hours,
+            "Model[Work]": hours,
         })
+
+    def _task_id(self, task_id):
+        if task_id < 1000000:
+            task_id += 1000000
+        return task_id
 
 __all__ = [ 'Client' ]
