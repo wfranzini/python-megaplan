@@ -26,4 +26,11 @@ To list actual tasks:
 License
 -------
 
-BSD.
+Gnu GPL.
+
+
+Links
+-----
+
+* http://code.umonkey.net/python-megaplan
+* http://pypi.python.org/pypi/megaplan
