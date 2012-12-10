@@ -98,7 +98,7 @@ class Client:
         exception occurs."""
         if uri != "BumsCommonApiV01/User/authorize.api" and (self.access_id is None or self.secret_key is None):
             raise Exception('Authenticate first.')
-        req = Request(self.hostname, self.access_id, self.secret_key, uri, args)
+        req = Request(str(self.hostname), str(self.access_id), str(self.secret_key), uri, args)
         if signed:
             req.sign()
         return req.send()
