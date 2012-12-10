@@ -32,14 +32,10 @@ License: BSD.
 import base64
 import hashlib
 import hmac
+import json
 import time
 import urllib
 import urllib2
-
-try:
-    import json as simplejson
-except ImportError:
-    import simplejson
 
 
 class Request:
@@ -70,7 +66,7 @@ class Request:
             req.add_header('X-Authorization', self.access_id + ':' + self.signature)
 
         res = urllib2.urlopen(req)
-        data = simplejson.loads(res.read())
+        data = json.loads(res.read())
         if data['status']['code'] != 'ok':
             raise Exception(data['status']['message'])
 
