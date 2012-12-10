@@ -61,7 +61,7 @@ class Request:
         req = urllib2.Request(url, data)
         req.add_header('Date', self.date)
         req.add_header('Accept', 'application/json')
-        req.add_header('User-Agent', 'SdfApi_Request')
+        req.add_header('User-Agent', 'python-megaplan')
         if self.signature:
             req.add_header('X-Authorization', self.access_id + ':' + self.signature)
 
