@@ -4,6 +4,11 @@
 from setuptools import setup
 
 
+DESCRIPTION = """Megaplan is a popular Russian CRM, which includes a task
+manager among other things.  This module implements parts of the API to work
+with the tasks."""
+
+
 setup(
     author = 'Justin Forest',
     author_email = 'hex@umonkey.net',
@@ -16,11 +21,11 @@ setup(
     ],
     description = 'Python interface to megaplan.ru API',
     license = 'GNU GPL',
-    long_description = 'This module lets you interact with megaplan.ru (hosted or local), currently in read-only mode.',
+    long_description = DESCRIPTION,
     name = 'megaplan',
-    package_dir = { '': 'src' },
-    packages = [ 'megaplan', ],
-    requires = [ 'json' ],
+    package_dir = {'': 'src'},
+    packages = ['megaplan'],
+    requires = ['json'],
     url = 'http://code.umonkey.net/python-megaplan/',
-    version = '1.0'
+    version = '1.1'
 )

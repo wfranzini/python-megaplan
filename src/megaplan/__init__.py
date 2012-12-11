@@ -29,6 +29,12 @@ To list actual tasks:
 License: BSD.
 """
 
+__author__ = "Justin Forest"
+__email__ = "hex@umonkey.net"
+__license__ = "GPL"
+__version__ = "1.1"
+
+
 import base64
 import hashlib
 import hmac
