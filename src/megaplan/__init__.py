@@ -32,19 +32,20 @@ License: BSD.
 __author__ = "Justin Forest"
 __email__ = "hex@umonkey.net"
 __license__ = "GPL"
-__version__ = "1.1"
+__version__ = "1.2"
 
 
 import base64
 import hashlib
 import hmac
 import json
+import netrc
 import time
 import urllib
 import urllib2
 
 
-class Request:
+class Request(object):
     def __init__(self, hostname, access_id, secret_key, uri, data=None):
         self.method = 'POST'
         self.proto = 'https'
@@ -80,11 +81,22 @@ class Request:
             return data['data']
 
 
-class Client:
+class Client(object):
     def __init__(self, hostname, access_id=None, secret_key=None):
         self.hostname = hostname
+
+        if access_id is None and secret_key is None:
+            access_id, secret_key = self.get_netrc_auth(hostname)
+
         self.access_id = access_id
         self.secret_key = secret_key
+
+    def get_netrc_auth(self, hostname):
+        n = netrc.netrc()
+        auth = n.authenticators(hostname)
+        if auth is None:
+            return None, None
+        return auth[0], auth[2]
 
     def authenticate(self, login, password):
         """Authenticates the client.
@@ -172,5 +184,10 @@ class Client:
         if task_id < 1000000:
             task_id += 1000000
         return task_id
+
+    def __repr__(self):
+        if self.access_id is not None:
+            return "<megaplan.Client access_id=%s>" % self.access_id
+        return super(Client, self).__repr__()
 
 __all__ = [ 'Client' ]

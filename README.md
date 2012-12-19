@@ -16,6 +16,17 @@ To use tokens:
     # access_id, secret_key = c.authenticate(login, password)
     c = megaplan.Client('xyz.megaplan.ru', access_id, secret_key)
 
+To read the token from ~/.netrc:
+
+    import megaplan
+    c = megaplan.Client('xyz.megaplan.ru')
+
+Example ~/.netrc entry:
+
+    machine xyz.megaplan.ru
+    login NNNNNNNNNNNNNNNNNNNN
+    password NNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNN
+
 To list actual tasks:
 
     res = c.request('BumsTaskApiV01/Task/list.api', { 'Status': 'actual' })
