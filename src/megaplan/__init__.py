@@ -32,7 +32,7 @@ License: BSD.
 __author__ = "Justin Forest"
 __email__ = "hex@umonkey.net"
 __license__ = "GPL"
-__version__ = "1.2"
+__version__ = "1.3"
 
 
 import base64
@@ -43,6 +43,12 @@ import netrc
 import time
 import urllib
 import urllib2
+
+
+def _utf(s):
+    if isinstance(s, unicode):
+        s = s.encode("utf-8")
+    return s
 
 
 class Request(object):
@@ -75,6 +81,13 @@ class Request(object):
         res = urllib2.urlopen(req)
         data = json.loads(res.read())
         if data['status']['code'] != 'ok':
+            m = data["status"]["message"]
+            if isinstance(m, list):
+                m = m[0]
+
+            if isinstance(m, dict):
+                raise Exception(_utf(m["msg"]))
+
             raise Exception(data['status']['message'])
 
         if "data" in data:
@@ -128,12 +141,33 @@ class Client(object):
 
     # SOME HELPER METHODS
 
+    def add_task(self, name, text, responsible=None, parent_task=None):
+        args = {
+            "Model[Name]": _utf(name),
+            "Model[Statement]": _utf(text),
+        }
+
+        if responsible:
+            args["Model[Responsible]"] = responsible
+
+        if parent_task:
+            args["Model[SuperTask]"] = parent_task
+
+        return self.request("BumsTaskApiV01/Task/create.api", args)
+
     def get_incoming_tasks(self):
         """Returns all visible tasks"""
         return self.request('BumsTaskApiV01/Task/list.api', {
             'Folder': 'incoming',
             'Detailed': True,
         })["tasks"]
+
+    def get_projects(self, folder="incoming", status="any"):
+        return self.request("BumsProjectApiV01/Project/list.api", {
+            "Folder": folder,
+            "Status": status,
+            "Detailed": True,
+        })["projects"]
 
     def get_actual_tasks(self):
         """Returns your active tasks as a list of dictionaries."""
@@ -163,22 +197,39 @@ class Client(object):
                 return False
             raise e
 
+    def get_all_comments(self, actual=False):
+        return self.request('BumsCommonApiV01/Comment/all.api', {
+            "OnlyActual": "true" if actual else "false",
+        })["comments"]
+
     def get_task_comments(self, task_id):
-        return self.request('BumsCommonApiV01/Comment/list.api', { 'SubjectType': 'task', 'SubjectId': task_id })["comments"]
+        return self.request('BumsCommonApiV01/Comment/list.api', {
+            'SubjectType': 'task',
+            'SubjectId': task_id,
+        })["comments"]
 
-    def add_task_comment(self, task_id, text, hours=0):
-        return self._add_comment("task", task_id, text, hours)
+    def get_project_comments(self, project_id):
+        return self.request('BumsCommonApiV01/Comment/list.api', {
+            'SubjectType': 'project',
+            'SubjectId': project_id,
+        })["comments"]
 
-    def add_project_comment(self, project_id, text, hours=0):
-        return self._add_comment("project", project_id, text, hours)
+    def add_task_comment(self, task_id, text, hours=0, date=None):
+        return self._add_comment("task", task_id, text, hours, date)
 
-    def _add_comment(self, _type, _id, text, hours):
-        return self.request("BumsCommonApiV01/Comment/create.api", {
+    def add_project_comment(self, project_id, text, hours=0, date=None):
+        return self._add_comment("project", project_id, text, hours, date)
+
+    def _add_comment(self, _type, _id, text, hours, date=None):
+        msg = {
             "SubjectType": _type,
             "SubjectId": self._task_id(_id),
             "Model[Text]": text,
             "Model[Work]": hours,
-        })
+        }
+        if date is not None:
+            msg["Model[WorkDate]"] = date
+        return self.request("BumsCommonApiV01/Comment/create.api", msg)
 
     def _task_id(self, task_id):
         if task_id < 1000000:

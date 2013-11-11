@@ -27,5 +27,5 @@ setup(
     packages = ['megaplan'],
     requires = ['json'],
     url = 'http://code.umonkey.net/python-megaplan/',
-    version = '1.2'
+    version = '1.4'
 )

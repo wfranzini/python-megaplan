@@ -1,4 +1,4 @@
 PYTHON=python
 
 release-pypi:
-	$(PYTHON) setup.py sdist upload
+	$(PYTHON) setup.py sdist upload --sign

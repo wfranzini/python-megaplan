@@ -1,4 +1,15 @@
-Version 1.2,  2012/12/19
+2013/11/11 (version 1.4)
+
+* Method add_task.
+
+
+2013/01/21 (version 1.3)
+
+* Methods get_projects, get_project_comments and add_project_comment.
+* When adding comments, date can be specified.
+
+
+2012/12/19 (version 1.2)
 
 * Base all classes off object.
 * Support for reading authentication data from ~/.netrc
