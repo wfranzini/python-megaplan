@@ -43,10 +43,11 @@ import netrc
 import time
 import urllib
 import urllib2
+import six
 
 
 def _utf(s):
-    if isinstance(s, unicode):
+    if six.PY2 and isinstance(s, six.text_type):
         s = s.encode("utf-8")
     return s
 
