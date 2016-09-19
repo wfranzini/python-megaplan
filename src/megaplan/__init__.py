@@ -181,7 +181,7 @@ class Client(object):
         """Returns task description or None if there's no such task."""
         try:
             return self.request('BumsTaskApiV01/Task/card.api', { 'Id': self._task_id(task_id) })
-        except urllib2.HTTPError, e:
+        except urllib2.HTTPError as e:
             if e.getcode() == 404:
                 return None
             raise e
@@ -192,7 +192,7 @@ class Client(object):
                 "Id": self._task_id(task_id),
                 "Action": action,
             })
-        except urllib2.HTTPError, e:
+        except urllib2.HTTPError as e:
             if e.getcode() == 403:
                 return False
             raise e
