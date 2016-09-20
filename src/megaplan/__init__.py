@@ -42,7 +42,15 @@ import json
 import netrc
 import time
 import urllib
-import urllib2
+try:
+    from urllib2 import urlopen, HTTPError
+    from urllib2 import Request as uRequest
+except ImportError:
+    from urllib.request import urlopen
+    from urllib.request import Request as uRequest
+    from urllib.error import HTTPError
+
+
 import six
 
 
@@ -72,14 +80,14 @@ class Request(object):
         url = self.proto + '://' + self.uri
         data = self.data and urllib.urlencode(self.data)
 
-        req = urllib2.Request(url, data)
+        req = uRequest(url, data)
         req.add_header('Date', self.date)
         req.add_header('Accept', 'application/json')
         req.add_header('User-Agent', 'python-megaplan')
         if self.signature:
             req.add_header('X-Authorization', self.access_id + ':' + self.signature)
 
-        res = urllib2.urlopen(req)
+        res = urlopen(req)
         data = json.loads(res.read())
         if data['status']['code'] != 'ok':
             m = data["status"]["message"]
@@ -130,7 +138,7 @@ class Client(object):
         exception occurs."""
         if uri != "BumsCommonApiV01/User/authorize.api" and (self.access_id is None or self.secret_key is None):
             raise Exception('Authenticate first.')
-        req = Request(str(self.hostname), str(self.access_id), str(self.secret_key), uri, args)
+        req = uRequest(str(self.hostname), str(self.access_id), str(self.secret_key), uri, args)
         if signed:
             req.sign()
         return req.send()
@@ -182,7 +190,7 @@ class Client(object):
         """Returns task description or None if there's no such task."""
         try:
             return self.request('BumsTaskApiV01/Task/card.api', { 'Id': self._task_id(task_id) })
-        except urllib2.HTTPError as e:
+        except HTTPError as e:
             if e.getcode() == 404:
                 return None
             raise e
@@ -193,7 +201,7 @@ class Client(object):
                 "Id": self._task_id(task_id),
                 "Action": action,
             })
-        except urllib2.HTTPError as e:
+        except HTTPError as e:
             if e.getcode() == 403:
                 return False
             raise e
